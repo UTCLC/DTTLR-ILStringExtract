@@ -6,38 +6,64 @@ pattern = re.compile("\"(?:\\\.|[^\"\\\])*\"")
 def find(dir):
 	for dirfile in os.listdir(dir):
 		path = os.path.join(dir, dirfile)
-		if (os.path.isfile(path) and not (path.endswith("strings.json"))):
+		if (os.path.isfile(path) and not (os.path.basename(path) in outputs)):
 			print("Searching "+path)
 			try: 
 				with (open(path, mode="r", encoding="utf-8") as f):
 					lines = f.readlines()
 					linen = 0
 					for line in lines:
-						searchs = pattern.finditer(line)
-						found = False
-						num = 0
-						for search in searchs:
-							found = True
+						search = pattern.search(line)
+						if (search):
 							string = search.group()[1:][:-1]
-							print(f"Found {string} in {path} at line {linen}, num {num}")
-							strings[path.replace(directory,"").lstrip("\\")+":"+str(linen)+":"+str(num)] = string
-							num += 1
-						linen += 1
-					if (found):
-						print(f"No string was found in {path}")
+							print(f"Found {string} in {path} at line {linen}")
+							strings[path.replace(directory,"").lstrip("\\")+":"+str(linen)] = string
+							linen += 1
 			except:
 				print("Error encountered when loading "+path)
 		elif (os.path.isdir(path)):
 			find(path)
 
 def output(dir):
-	with open(dir+"/strings.json", mode="w", encoding="utf-8") as f:
-		f.write(json.dumps(strings, indent=4, separators=(',', ': ')))
+	start_with_asterisk = {}
+	contain_slash_underline = {}
+	contain_space = {}
+	contain_upper = {}
+	others = {}
+	for file in strings.keys():
+		if ("* " in strings[file]):
+			start_with_asterisk[file] = strings[file]
+		elif ("/" in strings[file] or "_" in strings[file]):
+			contain_slash_underline[file] = strings[file]
+		elif (" " in strings[file]):
+			contain_space[file] = strings[file]
+		elif (strings[file].lower() != strings[file]):
+			contain_upper[file] = strings[file]
+		else:
+			others[file] = strings[file]
+	with open(dir+"/asterisk.json", mode="w", encoding="utf-8") as f:
+		f.write(json.dumps(start_with_asterisk, indent=4, separators=(',', ': ')))
+	with open(dir+"/slash_underline.json", mode="w", encoding="utf-8") as f:
+		f.write(json.dumps(contain_slash_underline, indent=4, separators=(',', ': ')))
+	with open(dir+"/space.json", mode="w", encoding="utf-8") as f:
+		f.write(json.dumps(contain_space, indent=4, separators=(',', ': ')))
+	with open(dir+"/upper.json", mode="w", encoding="utf-8") as f:
+		f.write(json.dumps(contain_upper, indent=4, separators=(',', ': ')))
+	with open(dir+"/others.json", mode="w", encoding="utf-8") as f:
+		f.write(json.dumps(others, indent=4, separators=(',', ': ')))
 
 def inputt(jsonf):
 	global strings
-	with open(jsonf+"/strings.json", mode="r", encoding="utf-8") as f:
-		strings = json.loads(f.read())
+	with open(jsonf+"/asterisk.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
+	with open(jsonf+"/slash_underline.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
+	with open(jsonf+"/space.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
+	with open(jsonf+"/upper.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
+	with open(jsonf+"/others.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
 
 def write(dir):
 	dir+="/"
@@ -63,14 +89,12 @@ def write(dir):
 			for stringslinen in paths[path]:
 				key = list(strings.keys())[stringslinen].split(":")
 				linen = int(key[1])
-				num = int(key[2])
 				line = lines[linen]
-				#print("Writing "+list(strings.values())[stringslinen]+" into "+path+" at line "+str(linen)+", num "+str(num))
-				searchs = pattern.findall(line)
-				print(f"{searchs} was found in line {linen} of {path}")
-				if (len(searchs) != 0):
-					print("Replacing "+searchs[num]+" with \""+list(strings.values())[stringslinen]+"\" into "+path+" at line "+str(linen)+", num "+str(num))
-					lines[linen] = line.replace(searchs[num],"\""+list(strings.values())[stringslinen]+"\"",1)
+				search = pattern.search(line)
+				if (search):
+					print(f"{search} was found in line {linen} of {path}")
+					print("Replacing "+search.group()+" with \""+list(strings.values())[stringslinen]+"\" into "+path+" at line "+str(linen))
+					lines[linen] = line.replace(search.group(),"\""+list(strings.values())[stringslinen]+"\"",1)
 				else:
 					print(f"No string was found in {path}")
 			ff.writelines(lines)
@@ -79,17 +103,19 @@ def write(dir):
 			print("Error encountered when writing "+dir+"Repacked/"+path)
 
 strings = {}
+outputs = ["asterisk.json","slash_underline.json","space.json","upper.json","others.json"]
 directory = input("Directory: ").replace("\\","/")
 if (directory.endswith("/")):
 	directory = dir[:-1]
-inpt = input("Extract(e) / Repack(r)\nIf nothing input, found strings.json will repack, otherwise extract: ")
+inpt = input("Extract(e) / Repack(r)\nIf nothing input, found all output JSONs will repack, otherwise extract: ")
 if (inpt == ""):
-	if (os.path.exists(directory+"/strings.json")):
-		print("strings.json was found in "+directory)
-		inpt = "r"
-	else:
-		print("strings.json was not found in "+directory)
-		inpt = "e"
+	inpt = "r"
+	for outputt in outputs:
+		if (os.path.exists(directory+"/"+outputt)):
+			print(outputt+" was found in "+directory)
+		else:
+			print(outputt+" was not found in "+directory)
+			inpt = "e"
 if (inpt == "e" or inpt == "extract"):
 	find(directory)
 	output(directory)
