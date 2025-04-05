@@ -18,7 +18,7 @@ def find(dir):
 							string = search.group()[1:][:-1]
 							print(f"Found {string} in {path} at line {linen}")
 							strings[path.replace(directory,"").lstrip("\\")+":"+str(linen)] = string
-							linen += 1
+						linen += 1
 			except:
 				print("Error encountered when loading "+path)
 		elif (os.path.isdir(path)):
@@ -54,15 +54,15 @@ def output(dir):
 
 def inputt(jsonf):
 	global strings
-	with open(jsonf+"/asterisk.json", mode="r", encoding="utf-8") as f:
-		strings.update(json.loads(f.read()))
-	with open(jsonf+"/slash_underline.json", mode="r", encoding="utf-8") as f:
-		strings.update(json.loads(f.read()))
-	with open(jsonf+"/space.json", mode="r", encoding="utf-8") as f:
+	with open(jsonf+"/others.json", mode="r", encoding="utf-8") as f:
 		strings.update(json.loads(f.read()))
 	with open(jsonf+"/upper.json", mode="r", encoding="utf-8") as f:
 		strings.update(json.loads(f.read()))
-	with open(jsonf+"/others.json", mode="r", encoding="utf-8") as f:
+	with open(jsonf+"/space.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
+	with open(jsonf+"/slash_underline.json", mode="r", encoding="utf-8") as f:
+		strings.update(json.loads(f.read()))
+	with open(jsonf+"/asterisk.json", mode="r", encoding="utf-8") as f:
 		strings.update(json.loads(f.read()))
 
 def write(dir):
