@@ -95,8 +95,8 @@ def write(dir):
 					print(f"{search} was found in line {linen} of {path}")
 					print("Replacing "+search.group()+" with \""+list(strings.values())[stringslinen]+"\" into "+path+" at line "+str(linen))
 					lines[linen] = line.replace(search.group(),"\""+list(strings.values())[stringslinen]+"\"",1)
-				else:
-					print(f"No string was found in {path}")
+				#else:
+					#print(f"No string was found in {path}")
 			ff.writelines(lines)
 			ff.close()
 		except:
