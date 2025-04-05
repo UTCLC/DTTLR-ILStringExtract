@@ -42,15 +42,15 @@ def output(dir):
 		else:
 			others[file] = strings[file]
 	with open(dir+"/asterisk.json", mode="w", encoding="utf-8") as f:
-		f.write(json.dumps(start_with_asterisk, indent=4, separators=(',', ': ')))
+		f.write(json.dumps(start_with_asterisk, indent=4, separators=(',', ': '), ensure_ascii=False))
 	with open(dir+"/slash_underline.json", mode="w", encoding="utf-8") as f:
-		f.write(json.dumps(contain_slash_underline, indent=4, separators=(',', ': ')))
+		f.write(json.dumps(contain_slash_underline, indent=4, separators=(',', ': '), ensure_ascii=False))
 	with open(dir+"/space.json", mode="w", encoding="utf-8") as f:
-		f.write(json.dumps(contain_space, indent=4, separators=(',', ': ')))
+		f.write(json.dumps(contain_space, indent=4, separators=(',', ': '), ensure_ascii=False))
 	with open(dir+"/upper.json", mode="w", encoding="utf-8") as f:
-		f.write(json.dumps(contain_upper, indent=4, separators=(',', ': ')))
+		f.write(json.dumps(contain_upper, indent=4, separators=(',', ': '), ensure_ascii=False))
 	with open(dir+"/others.json", mode="w", encoding="utf-8") as f:
-		f.write(json.dumps(others, indent=4, separators=(',', ': ')))
+		f.write(json.dumps(others, indent=4, separators=(',', ': '), ensure_ascii=False))
 
 def inputt(jsonf):
 	global strings
