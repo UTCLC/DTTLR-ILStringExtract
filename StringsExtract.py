@@ -21,7 +21,7 @@ def find(dir):
 						linen += 1
 			except:
 				print("Error encountered when loading "+path)
-		elif (os.path.isdir(path)):
+		elif (os.path.isdir(path) and not (path.rstrip("/").rstrip("\\").endswith("Repacked"))):
 			find(path)
 
 def output(dir):
