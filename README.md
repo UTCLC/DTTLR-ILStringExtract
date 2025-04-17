@@ -10,3 +10,5 @@
 ```space.json```：含有空格的，基本都是菜单选项或者对话的后半段，可以看着来翻译<br>
 ```upper.json```：含有大写的<br>
 ```others.json```：剩下的
+
+```UpdateLineAfterUpdated.py```可以在原有IL更新后更新json中key的行数 (By DeepSeek)
